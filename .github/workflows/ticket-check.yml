@@ -1,6 +1,8 @@
 name: Ticket Availability Check
 
 on:
+  push:
+    branches: [ main, master ]  # push時も実行（テスト用）
   schedule:
     # 15分間隔で実行 (GitHub Actionsの最小間隔は5分)
     - cron: '*/15 * * * *'
