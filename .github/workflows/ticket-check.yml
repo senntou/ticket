@@ -16,6 +16,7 @@ env:
 jobs:
   check-ticket:
     runs-on: ubuntu-latest
+    environment: production  # Environment secrets を使用
     
     steps:
     - name: Checkout code
