@@ -1,12 +1,10 @@
 name: Ticket Availability Check
 
 on:
-  push:
-    branches: [ main, master ]  # push時も実行（テスト用）
   schedule:
     # 15分間隔で実行 (GitHub Actionsの最小間隔は5分)
-    - cron: '*/15 * * * *'
-  workflow_dispatch:  # 手動実行も可能
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # 手動実行も可能
 
 env:
   TICKET_URL: ${{ secrets.TICKET_URL }}
@@ -16,52 +14,52 @@ env:
 jobs:
   check-ticket:
     runs-on: ubuntu-latest
-    environment: production  # Environment secrets を使用
-    
+    environment: production # Environment secrets を使用
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        
-    - name: Cache pip dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-          
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        
-    - name: Install Playwright browsers
-      run: |
-        playwright install chromium
-        playwright install-deps
-        
-    - name: Run ticket check
-      id: ticket_check
-      run: |
-        python check_once.py
-      env:
-        TICKET_URL: ${{ secrets.TICKET_URL }}
-        TARGET_CLASS: ${{ secrets.TARGET_CLASS }}
-        LINE_ACCESS_TOKEN: ${{ secrets.LINE_ACCESS_TOKEN }}
-      continue-on-error: true
-      
-    - name: Check result and notify
-      run: |
-        exit_code=${{ steps.ticket_check.outcome }}
-        echo "チケットチェック結果: $exit_code"
-        
-        if [ "$exit_code" == "success" ]; then
-          echo "✅ チケットは完売中です"
-        else
-          echo "🚨 チケットが販売中の可能性があります！"
-        fi
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium
+          playwright install-deps
+
+      - name: Run ticket check
+        id: ticket_check
+        run: |
+          python check_once.py
+        env:
+          TICKET_URL: ${{ secrets.TICKET_URL }}
+          TARGET_CLASS: ${{ secrets.TARGET_CLASS }}
+          LINE_ACCESS_TOKEN: ${{ secrets.LINE_ACCESS_TOKEN }}
+        continue-on-error: true
+
+      - name: Check result and notify
+        run: |
+          exit_code=${{ steps.ticket_check.outcome }}
+          echo "チケットチェック結果: $exit_code"
+
+          if [ "$exit_code" == "success" ]; then
+            echo "✅ チケットは完売中です"
+          else
+            echo "🚨 チケットが販売中の可能性があります！"
+          fi
