@@ -1,9 +1,6 @@
 name: Ticket Availability Check
 
 on:
-  schedule:
-    # 15分間隔で実行 (GitHub Actionsの最小間隔は5分)
-    - cron: "*/15 * * * *"
   workflow_dispatch: # 手動実行も可能
 
 env:
